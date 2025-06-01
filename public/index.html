@@ -449,7 +449,21 @@ header {
 <div class="messages" id="messages"><div id="scroll-anchor"></div></div>
 <div class="typing dot-animate" id="typing" style="display: none;">Escribiendo</div>
 <div class="input-area">
-<input id="userInput" placeholder="Escribe tu mensaje..." type="text"/>
+
+<textarea id="userInput" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" placeholder="Escribe tu mensaje..." rows="1" style="
+          flex-grow: 1;
+          padding: 10px 15px;
+          border: 1px solid #555;
+          border-radius: 8px;
+          font-size: 1rem;
+          background-color: #1f2937;
+          color: #fff;
+          outline: none;
+          resize: none;
+          overflow: hidden;
+          max-height: 200px;
+        "></textarea>
+
 <button onclick="sendMessage()">Enviar</button>
 </div>
 <button id="startButton" onclick="window.location.href='https://whatsform.com/7i2sdc'">Iniciar trámite</button>
