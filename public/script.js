@@ -1,55 +1,24 @@
-
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("chat-form");
+async function handleSend() {
   const input = document.getElementById("user-input");
-  const chatBox = document.getElementById("chat-box");
+  const output = document.getElementById("chat-output");
+  const message = input.value;
+  input.value = "";
 
-  let threadId = null;
-
-  async function sendMessage(message) {
-    const userMessage = document.createElement("div");
-    userMessage.className = "user-message";
-    userMessage.innerText = message;
-    chatBox.appendChild(userMessage);
-
-    input.value = "";
-    const loadingMsg = document.createElement("div");
-    loadingMsg.className = "bot-message";
-    loadingMsg.innerText = "Escribiendo...";
-    chatBox.appendChild(loadingMsg);
-
-    try {
-      if (!threadId) {
-        const resThread = await fetch("/api/thread", { method: "POST" });
-        const dataThread = await resThread.json();
-        threadId = dataThread.threadId;
-      }
-
-      const res = await fetch("/api/message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, threadId }),
-      });
-      const data = await res.json();
-      loadingMsg.remove();
-
-      const botMessage = document.createElement("div");
-      botMessage.className = "bot-message";
-      botMessage.innerText = data.response;
-      chatBox.appendChild(botMessage);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    } catch (err) {
-      loadingMsg.remove();
-      const errorMessage = document.createElement("div");
-      errorMessage.className = "bot-message";
-      errorMessage.innerText = "Ocurrió un error al enviar el mensaje.";
-      chatBox.appendChild(errorMessage);
-    }
+  let threadId = localStorage.getItem("thread_id");
+  if (!threadId) {
+    const threadRes = await fetch("/api/thread");
+    const data = await threadRes.json();
+    threadId = data.thread_id;
+    localStorage.setItem("thread_id", threadId);
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const message = input.value.trim();
-    if (message) sendMessage(message);
+  const res = await fetch("/api/message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, thread_id: threadId }),
   });
-});
+
+  const data = await res.json();
+  output.innerHTML += "<div><strong>Tú:</strong> " + message + "</div>";
+  output.innerHTML += "<div><strong>Bot:</strong> " + data.reply + "</div>";
+}
