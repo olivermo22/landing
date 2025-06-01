@@ -1,6 +1,7 @@
 {
   "name": "gestoria",
   "version": "1.0.0",
+  "description": "Chatbot de Gestoría Virtual",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js"
